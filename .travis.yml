@@ -5,21 +5,25 @@ sudo: false
 go:
   - 1.5
 
+
+before_install:
+  # back to build path
+  - cd $TRAVIS_BUILD_DIR
+  # enforcing ssh on go gets
+  - git config --global url."git@github.com:".insteadOf "https://github.com/"
+  # downloading Makefile from devops
+  - make
+
 script:
+  - make test
   - make test-coverage
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
-
-before_deploy:
-  - make packages
 
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
   file:
-    - build/ofelia_${TRAVIS_TAG}_darwin_amd64.tar.gz
-    - build/ofelia_${TRAVIS_TAG}_linux_amd64.tar.gz
+    - build/$(PROJECT)_${TRAVIS_TAG}_darwin_amd64.tar.gz
+    - build/$(PROJECT)_${TRAVIS_TAG}_linux_amd64.tar.gz
   skip_cleanup: true
   on:
     tags: true
